@@ -32,7 +32,8 @@
     }
 
     /* This is our private image loader function, it is
-     * called by the public image loader function.
+     * called by the public image loader function. Private means it's not an object method,
+     it is just used inside an object method.
      */
     function _load(url) {
         if(resourceCache[url]) {

@@ -5,6 +5,9 @@ var Enemy = function() {
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
+    this.y = 101;
+    // 101px is the height of each background box, so I initialize the prototype enemy at the top stone box
+    this.x = 0;
     this.sprite = 'images/enemy-bug.png';
 };
 
@@ -14,6 +17,10 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    setTimeout(function() {
+      this.x = this.x + 1;
+    }, dt);
+    // This timeout will create an effect for the moving enemy
 };
 
 // Draw the enemy on the screen, required method for game
@@ -23,12 +30,47 @@ Enemy.prototype.render = function() {
 
 // Now write your own player class
 // This class requires an update(), render() and
-// a handleInput() method.
+// a handleInput() method which will respond to the arrow presses by moving the player.
+var Player = function() {
+  this.x = 4*83;
+  this.y = 4*101;
+  this.sprite = 'images/char-boy.png'
+}
 
+Player.prototype.update = function(dy = 0, dx = 0) {
+  this.x = this.x + dx;
+  this.y = this.y + dy;
+};
+
+Player.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+Player.prototype.handleInput = function(keyPressed) {
+  let xMove = 0;
+  let yMove = 0;
+  if (keyPressed === "left") {
+    xMove = -101;
+  }
+  else if (keyPressed === "right") {
+    xMove = 101;
+  }
+  else if (keyPressed === "up") {
+    yMove = 83;
+  }
+  else {
+    yMove = -83;
+  }
+update(xMove, yMove);
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
+var enemy1 = new Enemy();
+var enemy2 = new Enemy();
+var allEnemies = [enemy1, enemy2];
+var player = new Player();
 
 
 
