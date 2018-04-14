@@ -7,7 +7,8 @@ var Enemy = function() {
     // a helper we've provided to easily load images
     this.y = 131;
     // 101px is the height of each background box, so I initialize the prototype enemy at the top stone box
-    this.x = 0;
+    this.x = -150;
+    // To make it start offscreen
     this.sprite = 'images/enemy-bug.png';
 };
 
@@ -17,10 +18,18 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    setTimeout(function() {
-      this.x = this.x + 1;
-    }, dt);
-    // This timeout will create an effect for the moving enemy
+    if (this.speed === 1) {
+      this.x = this.x + 180*dt;
+    }
+    else if (this.speed === 2) {
+      this.x = this.x + 250*dt;
+    }
+    else if (this.speed === 3) {
+      this.x = this.x + 330*dt;
+    }
+    else {
+      this.x = this.x + 400*dt;
+    }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -67,12 +76,17 @@ this.update(yMove, xMove);
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var enemy1 = new Enemy();
+var allEnemies = [];
+for (let i=1; i<5; i++) {
+  let enemy = new Enemy();
+  enemy.speed = i;
+  allEnemies.push(enemy);
+}
+/*var enemy1 = new Enemy();
 var enemy2 = new Enemy();
 var allEnemies = [enemy1, enemy2];
+*/
 var player = new Player();
-
-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
