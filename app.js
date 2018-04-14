@@ -5,7 +5,7 @@ var Enemy = function() {
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.y = 101;
+    this.y = 131;
     // 101px is the height of each background box, so I initialize the prototype enemy at the top stone box
     this.x = 0;
     this.sprite = 'images/enemy-bug.png';
@@ -32,8 +32,8 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method which will respond to the arrow presses by moving the player.
 var Player = function() {
-  this.x = 4*83;
-  this.y = 4*101;
+  this.x = 4*78;
+  this.y = 3*107;
   this.sprite = 'images/char-boy.png'
 }
 
