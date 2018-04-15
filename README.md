@@ -1,6 +1,14 @@
-frontend-nanodegree-arcade-game
-===============================
+# Classic arcade game clone
+The "classic arcade game clone" is a website built for educational and fun porposes. The user controls a player and tries to reach the end of the canvas while avoiding the enemies.
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission. Make sure the functions you write are **object-oriented** - either class functions (like Player and Enemy) or class prototype functions such as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately within your class and class prototype functions to refer to the object the function is called upon. Also be sure that the **readme.md** file is updated with your instructions on both how to 1. Run and 2. Play your arcade game.
+### How to run
+The game should start automatically once the webpage is loaded in a browser.
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+### How to Play
+Move the player around with the arrow keys. In order to win, try to reach the sea by avoiding the enemy bugs. If you collide with a bug, or win, the game will restart your player. In case you've been playing for a while and the bugs seem like they're moving in a certain pattern, reload the page to shuffle their movements.
+
+### Code dependencies
+This website was not built from scratch, I used the **code for the art assets and game engine provided by Udacity** through this repository: <a href="https://github.com/udacity/frontend-nanodegree-arcade-game">https://github.com/udacity/frontend-nanodegree-arcade-game</a>.
+
+### Compatibility and other issues
+This game is **built for desktop devices**. Even though the website is expected to load on any device, the game will probably work only for desktop devices (laptops and portable computers). As for browser compatibility, the game was tested on Google Chrome and Mozilla Firefox where it works fine. It was also **tested on Internet Explorer where it does not work** for unknown reasons. Please contact if you find out the reason or if you run across any other issues.
