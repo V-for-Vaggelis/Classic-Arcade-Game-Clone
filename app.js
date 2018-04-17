@@ -1,6 +1,6 @@
 /* I'll create an array holding all the possible y positions for the player and the enemies
 the position numbers were found after testing, the position step is related with the height of the icons used */
-let allY = [-11];
+let allY = [60];
 let yStep = 83;
 for (i=0; i<6; i++) {
   allY.push(allY[i] + yStep);
@@ -25,7 +25,7 @@ var Enemy = function() {
   // To make it start offscreen
   this.height = 171;
   this.width = 101;
-  this.sprite = 'images/enemy-bug.png';
+  this.sprite = 'images/tackle.png';
 };
 
 // Update the enemy's position, required method for game
@@ -65,18 +65,19 @@ Enemy.prototype.update = function(dt) {
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  ctx.drawImage(Resources.get(this.sprite2), this.x + 11, this.y);
 };
 
 Enemy.prototype.checkCollision = function() {
   /* Collision detection logic from: https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection.
   I basically handle the enemies and player as straight lines in spacem since their y values have fixed values that are same for both */
-  if (this.x < player.x + (player.width - 40) &&
-  this.x + (this.width - 40) > player.x &&
+  if (this.x < player.x + (player.width-50) &&
+  this.x + (this.width-50) > player.x &&
   this.y === player.y) {
     // collision detected --> restart player with delay for extra effect
     setTimeout( function() {
       player.restart();
-    }, 400);
+    }, 200);
   }
 }
 
@@ -88,12 +89,13 @@ var Player = function() {
   this.y = allY[4];
   this.height = 171;
   this.width = 101;
-  this.sprite = 'images/char-boy.png'
+  this.sprite = 'images/ball.png'
 }
 
 // This function creates the player
 Player.prototype.render = function() {
-  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  ctx.drawImage(Resources.get(this.sprite2), this.x, this.y);
+  ctx.drawImage(Resources.get(this.sprite), this.x + 10, this.y + 40);
 };
 
 // This function will update the player's position when called
@@ -151,6 +153,10 @@ for (let i=1; i<5; i++) {
   enemy.speed = i;
   allEnemies.push(enemy);
 }
+allEnemies[0].sprite2 = 'images/Pique.png';
+allEnemies[1].sprite2 = 'images/Chiellini.png';
+allEnemies[2].sprite2 = 'images/Pepe.png';
+allEnemies[3].sprite2 = 'images/Ramos.png';
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -185,6 +191,7 @@ function shuffleEnemies() {
 }
 shuffleEnemies();
 var player = new Player();
+player.sprite2 = 'images/Messi.png';
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
