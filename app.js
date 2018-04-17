@@ -12,6 +12,10 @@ let xStep = 101;
 for (let i=0; i<4; i++) {
   allPlayerX.push(allPlayerX[i] + xStep);
 }
+let enemiesScoreCount = 0;
+let enemiesScore = document.getElementById('enemy-score');
+let playerScoreCount = 0;
+let playerScore = document.getElementById('your-score');
 // Enemies our player must avoid
 var Enemy = function() {
   // Variables applied to each of our instances go here,
@@ -76,8 +80,14 @@ Enemy.prototype.checkCollision = function() {
   this.y === player.y) {
     // collision detected --> restart player with delay for extra effect
     setTimeout( function() {
-      player.restart();
+      if (!player.dead) {
+        player.dead = true;
+        player.restart();
+        enemiesScoreCount += 1;
+        enemiesScore.textContent = enemiesScoreCount;
+      }
     }, 200);
+    player.dead = false;
   }
 }
 
@@ -90,6 +100,7 @@ var Player = function() {
   this.height = 171;
   this.width = 101;
   this.sprite = 'images/ball.png'
+  this.dead = false;
 }
 
 // This function creates the player
@@ -110,20 +121,23 @@ Player.prototype.handleInput = function(keyPressed) {
   // The second statement in each of the if's checks so that the player can't move off-canvas
   if ((keyPressed === "left") && (this.x !== allPlayerX[0])) {
     xMove = -xStep;
+    this.update(yMove, xMove);
+    // Render the move
   }
   else if ((keyPressed === "right") && (this.x !== allPlayerX[4])) {
     xMove = xStep;
+    this.update(yMove, xMove);
   }
   else if ((keyPressed === "up") && (this.y !== allY[0])) {
     yMove = -yStep;
+    this.update(yMove, xMove);
+    this.checkWin();
+    // Check if the player wins after this move
   }
   else if ((keyPressed === "down") && (this.y !== allY[5])) {
     yMove = yStep;
+    this.update(yMove, xMove);
   }
-  // Render the move
-  this.update(yMove, xMove);
-  // Check if the player wins after this move
-  this.checkWin();
 };
 
 // This function will re-place the player on the initial positio when called
@@ -137,6 +151,8 @@ Player.prototype.checkWin = function() {
   let myPlayer = this;
   // Because this won't be directly identified into the timeout
   if (this.y === allY[0]) {
+    playerScoreCount += 1;
+    playerScore.textContent = playerScoreCount;
     setTimeout( function() {
       myPlayer.restart();
     }, 400);
