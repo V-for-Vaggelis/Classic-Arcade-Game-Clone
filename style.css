@@ -3,7 +3,7 @@ body {
 }
 
 #container {
-  margin-top: 10%;
+  margin-top: 5%;
   float: left;
   width: 20%;
   display: flex;
@@ -11,9 +11,9 @@ body {
 }
 
 #player-score, #enemies-score {
-  width: 40%;
+  width: 45%;
   text-align: center;
-  border: 3px solid brown;
+  border: 3px solid red;
   background-color: black;
 }
 
@@ -28,11 +28,33 @@ body {
 p {
   background-color: silver;
   color: blue;
-  font-size: 1.2em;
+  text-align: center;
+  /* font-size: 1.2em; */
 }
 
 h1 {
-  color: red;
+  color: yellow;
   font-size: 4em;
   /* padding-left: 0.3em; */
+}
+
+.collectibles {
+  margin-top: 10%;
+  float: left;
+  width: 30%;
+  margin-right: 1%;
+  height: 100px;
+  background-color: grey;
+  opacity: 0.4;
+  border: 1px solid red;
+}
+
+.collectibles-open {
+  margin-top: 10%;
+  float: left;
+  width: 30%;
+  margin-right: 1%;
+  height: 100px;
+  /* background-color: ; */
+  border: 2px ridge  green;
 }

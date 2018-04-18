@@ -16,6 +16,9 @@ let enemiesScoreCount = 0;
 let enemiesScore = document.getElementById('enemy-score');
 let playerScoreCount = 0;
 let playerScore = document.getElementById('your-score');
+let medal = document.getElementById('medal');
+let trophy = document.getElementById('trophy');
+let ballon = document.getElementById('ballon');
 // Enemies our player must avoid
 var Enemy = function() {
   // Variables applied to each of our instances go here,
@@ -88,6 +91,11 @@ Enemy.prototype.checkCollision = function() {
       }
     }, 200);
     player.dead = false;
+    for (let reward of collectibles) {
+      if (reward.collected === true) {
+        reward.collected = false;
+      }
+    }
   }
 }
 
@@ -153,6 +161,10 @@ Player.prototype.checkWin = function() {
   if (this.y === allY[0]) {
     playerScoreCount += 1;
     playerScore.textContent = playerScoreCount;
+    for (let reward of collectibles) {
+      reward.collectPickedRewards();
+    }
+    // Win any rewards picked before scoring
     setTimeout( function() {
       myPlayer.restart();
     }, 400);
@@ -190,7 +202,7 @@ function shuffle(array) {
 }
 
 // This will make sure that after a page reload the enemies don't move in the same pattern as before
-function shuffleEnemies() {
+function shufflePositionY(movingItems) {
   let yPos = [allY[1]];
   for (let i=0; i<2; i++) {
     let yNext = yPos[i] + yStep;
@@ -198,14 +210,15 @@ function shuffleEnemies() {
   }
   yPos.push(yPos[0]);
 
-  shuffle(allEnemies);
+  shuffle(movingItems);
   shuffle(yPos);
-
-  for (let i=0; i<4; i++) {
-    allEnemies[i].y = yPos[i];
+  let i = 0;
+  for (let item of movingItems) {
+    i = i + 1;
+    item.y = yPos[i];
   }
 }
-shuffleEnemies();
+shufflePositionY(allEnemies);
 var player = new Player();
 player.sprite2 = 'images/Messi.png';
 
@@ -221,3 +234,82 @@ document.addEventListener('keyup', function(e) {
 
   player.handleInput(allowedKeys[e.keyCode]);
 });
+
+var Collectible = function() {
+  this.picked = false;
+  this.collected = false;
+  this.x = -5000;
+  // Way off-screen
+  this.width = 70;
+  this.height = 70;
+}
+
+Collectible.prototype.render = function() {
+  if (!this.collected && !this.picked) {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+};
+
+Collectible.prototype.update = function(dt) {
+  if (this.x > 500) {
+    this.x = -5000;
+    // When the enemy leaves screenn from the right, place them on the left again to re-appear, also change his y position to the next one
+    if (this.y === allY[1]) {
+      this.y = allY[2];
+    }
+    else if (this.y === allY[2]) {
+      this.y = allY[3];
+    }
+    else {
+      this.y = allY[1];
+    }
+  }
+  if (this.speed === 1) {
+    this.x = this.x + 270*dt;
+  }
+  else if (this.speed === 2) {
+    this.x = this.x + 320*dt;
+  }
+  else {
+    this.x = this.x + 400*dt;
+  }
+  this.checkPick();
+};
+
+Collectible.prototype.checkPick = function() {
+  if (this.x < player.x + (player.width) &&
+  this.x + (this.width) > player.x &&
+  this.y === player.y) {
+    // collision detected --> pick reward
+    this.picked = true;
+  }
+};
+
+Collectible.prototype.collectPickedRewards = function() {
+    if (this.picked === true) {
+      this.collected = true;
+      if (this.sprite === "images/medal.png") {
+        medal.classList.remove("collectibles");
+        medal.classList.add("collectibles-open");
+        }
+      else if (this.sprite === "images/trophy.png") {
+        trophy.classList.remove("collectibles");
+        trophy.classList.add("collectibles-open");
+      }
+      else {
+        ballon.classList.remove("collectibles");
+        ballon.classList.add("collectibles-open");
+      }
+  }
+}
+
+var collectibles = [];
+for (let i=1; i<4; i++) {
+  let collectible = new Collectible();
+  collectible.speed = i;
+  collectibles.push(collectible);
+}
+collectibles[0].sprite = 'images/medal.png';
+collectibles[1].sprite = 'images/trophy.png';
+collectibles[2].sprite = 'images/ballon.png';
+shufflePositionY(collectibles);
