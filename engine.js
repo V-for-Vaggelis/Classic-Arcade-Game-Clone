@@ -193,7 +193,10 @@ var Engine = (function(global) {
     'images/trophy.png',
     'images/ballon.png',
     'images/Ronaldo.png',
-    'images/Neymar.png'
+    'images/Neymar.png',
+    'images/Messi-dead.png',
+    'images/Ronaldo-dead.png',
+    'images/Neymar-dead.png'
   ]);
   Resources.onReady(init);
 

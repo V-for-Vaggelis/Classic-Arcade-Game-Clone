@@ -19,6 +19,7 @@ let playerScore = document.getElementById('your-score');
 let medal = document.getElementById('medal');
 let trophy = document.getElementById('trophy');
 let ballon = document.getElementById('ballon');
+let timeOutStart;
 // Enemies our player must avoid
 var Enemy = function() {
   // Variables applied to each of our instances go here,
@@ -33,40 +34,43 @@ var Enemy = function() {
   this.height = 171;
   this.width = 101;
   this.sprite = 'images/tackle.png';
+  this.freeze = false;
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-  if (this.x > 500) {
-    this.x = -150;
-    // When the enemy leaves screenn from the right, place them on the left again to re-appear, also change his y position to the next one
-    if (this.y === allY[1]) {
-      this.y = allY[2];
+  if (!this.freeze) {
+    if (this.x > 500) {
+      this.x = -150;
+      // When the enemy leaves screenn from the right, place them on the left again to re-appear, also change his y position to the next one
+      if (this.y === allY[1]) {
+        this.y = allY[2];
+      }
+      else if (this.y === allY[2]) {
+        this.y = allY[3];
+      }
+      else {
+        this.y = allY[1];
+      }
     }
-    else if (this.y === allY[2]) {
-      this.y = allY[3];
+    // You should multiply any movement by the dt parameter
+    // which will ensure the game runs at the same speed for
+    // all computers.
+    if (this.speed === 1) {
+      this.x = this.x + 160*dt;
+    }
+    else if (this.speed === 2) {
+      this.x = this.x + 220*dt;
+    }
+    else if (this.speed === 3) {
+      this.x = this.x + 300*dt;
     }
     else {
-      this.y = allY[1];
+      this.x = this.x + 370*dt;
     }
+    this.checkCollision();
   }
-  // You should multiply any movement by the dt parameter
-  // which will ensure the game runs at the same speed for
-  // all computers.
-  if (this.speed === 1) {
-    this.x = this.x + 160*dt;
-  }
-  else if (this.speed === 2) {
-    this.x = this.x + 220*dt;
-  }
-  else if (this.speed === 3) {
-    this.x = this.x + 300*dt;
-  }
-  else {
-    this.x = this.x + 370*dt;
-  }
-  this.checkCollision();
 };
 
 // Draw the enemy on the screen, required method for game
@@ -81,15 +85,41 @@ Enemy.prototype.checkCollision = function() {
   if (this.x < player.x + (player.width-50) &&
   this.x + (this.width-50) > player.x &&
   this.y === player.y) {
+    for (let enemy of allEnemies) {
+      enemy.freeze = true;
+    }
+    for (let reward of collectibles) {
+      reward.freeze = true;
+    }
+    if (player.sprite2 === "images/Messi.png") {
+      player.sprite2 = "images/Messi-dead.png";
+    }
+    else if (player.sprite2 === "images/Ronaldo.png"){
+      player.sprite2 = "images/Ronaldo-dead.png";
+    }
+    else {
+      player.sprite2 = "images/Neymar-dead.png";
+    }
     // collision detected --> restart player with delay for extra effect
+    timeOutStart = true;
     setTimeout( function() {
       if (!player.dead) {
         player.dead = true;
         player.restart();
+        if (player.sprite2 === "images/Messi-dead.png") {
+          player.sprite2 = "images/Messi.png";
+        }
+        else if (player.sprite2 === "images/Ronaldo-dead.png"){
+          player.sprite2 = "images/Ronaldo.png";
+        }
+        else {
+          player.sprite2 = "images/Neymar.png";
+        }
         enemiesScoreCount += 1;
         enemiesScore.textContent = enemiesScoreCount;
       }
-    }, 200);
+      timeOutStart = false;
+    }, 500);
     player.dead = false;
     for (let reward of collectibles) {
       if (reward.picked === true) {
@@ -125,26 +155,28 @@ Player.prototype.update = function(dy = 0, dx = 0) {
 
 // This function will handle arrow keys pressed
 Player.prototype.handleInput = function(keyPressed) {
-  let xMove, yMove;
-  // The second statement in each of the if's checks so that the player can't move off-canvas
-  if ((keyPressed === "left") && (this.x !== allPlayerX[0])) {
-    xMove = -xStep;
-    this.update(yMove, xMove);
-    // Render the move
-  }
-  else if ((keyPressed === "right") && (this.x !== allPlayerX[4])) {
-    xMove = xStep;
-    this.update(yMove, xMove);
-  }
-  else if ((keyPressed === "up") && (this.y !== allY[0])) {
-    yMove = -yStep;
-    this.update(yMove, xMove);
-    this.checkWin();
-    // Check if the player wins after this move
-  }
-  else if ((keyPressed === "down") && (this.y !== allY[5])) {
-    yMove = yStep;
-    this.update(yMove, xMove);
+  if (!timeOutStart) {
+    let xMove, yMove;
+    // The second statement in each of the if's checks so that the player can't move off-canvas
+    if ((keyPressed === "left") && (this.x !== allPlayerX[0])) {
+      xMove = -xStep;
+      this.update(yMove, xMove);
+      // Render the move
+    }
+    else if ((keyPressed === "right") && (this.x !== allPlayerX[4])) {
+      xMove = xStep;
+      this.update(yMove, xMove);
+    }
+    else if ((keyPressed === "up") && (this.y !== allY[0])) {
+      yMove = -yStep;
+      this.update(yMove, xMove);
+      this.checkWin();
+      // Check if the player wins after this move
+    }
+    else if ((keyPressed === "down") && (this.y !== allY[5])) {
+      yMove = yStep;
+      this.update(yMove, xMove);
+    }
   }
 };
 
@@ -152,6 +184,12 @@ Player.prototype.handleInput = function(keyPressed) {
 Player.prototype.restart = function() {
   this.x = allPlayerX[3];
   this.y = allY[4];
+  for (let enemy of allEnemies) {
+    enemy.freeze = false;
+  }
+  for (let reward of collectibles) {
+    reward.freeze = false;
+  }
 }
 
 // This function checks if the player wins the game by checking his y position
@@ -242,6 +280,7 @@ var Collectible = function() {
   // Way off-screen
   this.width = 70;
   this.height = 70;
+  this.freeze = false;
 }
 
 Collectible.prototype.render = function() {
@@ -251,29 +290,31 @@ Collectible.prototype.render = function() {
 };
 
 Collectible.prototype.update = function(dt) {
-  if (this.x > 500) {
-    this.x = -5000;
-    // When the enemy leaves screenn from the right, place them on the left again to re-appear, also change his y position to the next one
-    if (this.y === allY[1]) {
-      this.y = allY[2];
+  if (!this.freeze) {
+    if (this.x > 500) {
+      this.x = -5000;
+      // When the enemy leaves screenn from the right, place them on the left again to re-appear, also change his y position to the next one
+      if (this.y === allY[1]) {
+        this.y = allY[2];
+      }
+      else if (this.y === allY[2]) {
+        this.y = allY[3];
+      }
+      else {
+        this.y = allY[1];
+      }
     }
-    else if (this.y === allY[2]) {
-      this.y = allY[3];
+    if (this.speed === 1) {
+      this.x = this.x + 270*dt;
+    }
+    else if (this.speed === 2) {
+      this.x = this.x + 320*dt;
     }
     else {
-      this.y = allY[1];
+      this.x = this.x + 400*dt;
     }
+    this.checkPick();
   }
-  if (this.speed === 1) {
-    this.x = this.x + 270*dt;
-  }
-  else if (this.speed === 2) {
-    this.x = this.x + 320*dt;
-  }
-  else {
-    this.x = this.x + 400*dt;
-  }
-  this.checkPick();
 };
 
 Collectible.prototype.checkPick = function() {
@@ -286,20 +327,20 @@ Collectible.prototype.checkPick = function() {
 };
 
 Collectible.prototype.collectPickedRewards = function() {
-    if (this.picked === true) {
-      this.collected = true;
-      if (this.sprite === "images/medal.png") {
-        medal.classList.remove("collectibles");
-        medal.classList.add("collectibles-open");
-        }
-      else if (this.sprite === "images/trophy.png") {
-        trophy.classList.remove("collectibles");
-        trophy.classList.add("collectibles-open");
-      }
-      else {
-        ballon.classList.remove("collectibles");
-        ballon.classList.add("collectibles-open");
-      }
+  if (this.picked === true) {
+    this.collected = true;
+    if (this.sprite === "images/medal.png") {
+      medal.classList.remove("collectibles");
+      medal.classList.add("collectibles-open");
+    }
+    else if (this.sprite === "images/trophy.png") {
+      trophy.classList.remove("collectibles");
+      trophy.classList.add("collectibles-open");
+    }
+    else {
+      ballon.classList.remove("collectibles");
+      ballon.classList.add("collectibles-open");
+    }
   }
 }
 
