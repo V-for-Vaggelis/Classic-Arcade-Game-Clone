@@ -40,6 +40,7 @@ var Enemy = function() {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
+  //The freeze variable will help me pause all movememnt for a bit when collision occurs
   if (!this.freeze) {
     if (this.x > 500) {
       this.x = -150;
@@ -69,6 +70,7 @@ Enemy.prototype.update = function(dt) {
     else {
       this.x = this.x + 370*dt;
     }
+    // On every update check if enemy collides with player
     this.checkCollision();
   }
 };
@@ -76,6 +78,7 @@ Enemy.prototype.update = function(dt) {
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  // This renders the faces upon a tackling figure
   ctx.drawImage(Resources.get(this.sprite2), this.x + 11, this.y);
 };
 
@@ -85,6 +88,7 @@ Enemy.prototype.checkCollision = function() {
   if (this.x < player.x + (player.width-50) &&
   this.x + (this.width-50) > player.x &&
   this.y === player.y) {
+    // When collision is detected I'll freeze all moving objects, also make the player look dead
     for (let enemy of allEnemies) {
       enemy.freeze = true;
     }
@@ -100,7 +104,8 @@ Enemy.prototype.checkCollision = function() {
     else {
       player.sprite2 = "images/Neymar-dead.png";
     }
-    // collision detected --> restart player with delay for extra effect
+    /* collision detected --> restart player with delay for extra effect, the boolean will help ensure
+    the user can't move the player until the collision effect is over */
     timeOutStart = true;
     setTimeout( function() {
       if (!player.dead) {
@@ -115,12 +120,14 @@ Enemy.prototype.checkCollision = function() {
         else {
           player.sprite2 = "images/Neymar.png";
         }
+        // update score table
         enemiesScoreCount += 1;
         enemiesScore.textContent = enemiesScoreCount;
       }
       timeOutStart = false;
     }, 500);
     player.dead = false;
+    // Lose all any trophies collected before getting killed
     for (let reward of collectibles) {
       if (reward.picked === true) {
         reward.picked = false;
@@ -143,6 +150,7 @@ var Player = function() {
 
 // This function creates the player
 Player.prototype.render = function() {
+  // A ball moves along with the player's face
   ctx.drawImage(Resources.get(this.sprite2), this.x, this.y);
   ctx.drawImage(Resources.get(this.sprite), this.x + 10, this.y + 40);
 };
@@ -155,6 +163,7 @@ Player.prototype.update = function(dy = 0, dx = 0) {
 
 // This function will handle arrow keys pressed
 Player.prototype.handleInput = function(keyPressed) {
+  // Only move player if everything is not frozen
   if (!timeOutStart) {
     let xMove, yMove;
     // The second statement in each of the if's checks so that the player can't move off-canvas
@@ -184,6 +193,7 @@ Player.prototype.handleInput = function(keyPressed) {
 Player.prototype.restart = function() {
   this.x = allPlayerX[3];
   this.y = allY[4];
+  // Unfreeze the movables if they froze from a collision
   for (let enemy of allEnemies) {
     enemy.freeze = false;
   }
@@ -205,7 +215,83 @@ Player.prototype.checkWin = function() {
     // Win any rewards picked before scoring
     setTimeout( function() {
       myPlayer.restart();
-    }, 400);
+    }, 500);
+  }
+}
+
+// Constructor for collectible objects
+var Collectible = function() {
+  this.picked = false;
+  this.collected = false;
+  this.x = -5000;
+  // Way off-screen
+  this.width = 70;
+  this.height = 70;
+  this.freeze = false;
+}
+
+Collectible.prototype.render = function() {
+  // A collection happens if the player picked the prize and then scored, so if the prizes are picked or collected they are not rendered
+  if (!this.collected && !this.picked) {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+};
+
+Collectible.prototype.update = function(dt) {
+  if (!this.freeze) {
+    if (this.x > 500) {
+      this.x = -5000;
+      // When the enemy leaves screenn from the right, place them on the left again to re-appear, also change his y position to the next one
+      if (this.y === allY[1]) {
+        this.y = allY[2];
+      }
+      else if (this.y === allY[2]) {
+        this.y = allY[3];
+      }
+      else {
+        this.y = allY[1];
+      }
+    }
+    if (this.speed === 1) {
+      this.x = this.x + 270*dt;
+    }
+    else if (this.speed === 2) {
+      this.x = this.x + 320*dt;
+    }
+    else {
+      this.x = this.x + 400*dt;
+    }
+    // On every update check if the item is picked
+    this.checkPick();
+  }
+};
+
+Collectible.prototype.checkPick = function() {
+  if (this.x < player.x + (player.width) &&
+  this.x + (this.width) > player.x &&
+  this.y === player.y) {
+    // collision detected --> pick reward
+    this.picked = true;
+  }
+};
+
+// A function to be called once the player scores and collect all his picked trophies
+Collectible.prototype.collectPickedRewards = function() {
+  if (this.picked === true) {
+    this.collected = true;
+    if (this.sprite === "images/medal.png") {
+      // So trophy on the left panel
+      medal.classList.remove("collectibles");
+      medal.classList.add("collectibles-open");
+    }
+    else if (this.sprite === "images/trophy.png") {
+      trophy.classList.remove("collectibles");
+      trophy.classList.add("collectibles-open");
+    }
+    else {
+      ballon.classList.remove("collectibles");
+      ballon.classList.add("collectibles-open");
+    }
   }
 }
 
@@ -273,77 +359,7 @@ document.addEventListener('keyup', function(e) {
   player.handleInput(allowedKeys[e.keyCode]);
 });
 
-var Collectible = function() {
-  this.picked = false;
-  this.collected = false;
-  this.x = -5000;
-  // Way off-screen
-  this.width = 70;
-  this.height = 70;
-  this.freeze = false;
-}
-
-Collectible.prototype.render = function() {
-  if (!this.collected && !this.picked) {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-  }
-};
-
-Collectible.prototype.update = function(dt) {
-  if (!this.freeze) {
-    if (this.x > 500) {
-      this.x = -5000;
-      // When the enemy leaves screenn from the right, place them on the left again to re-appear, also change his y position to the next one
-      if (this.y === allY[1]) {
-        this.y = allY[2];
-      }
-      else if (this.y === allY[2]) {
-        this.y = allY[3];
-      }
-      else {
-        this.y = allY[1];
-      }
-    }
-    if (this.speed === 1) {
-      this.x = this.x + 270*dt;
-    }
-    else if (this.speed === 2) {
-      this.x = this.x + 320*dt;
-    }
-    else {
-      this.x = this.x + 400*dt;
-    }
-    this.checkPick();
-  }
-};
-
-Collectible.prototype.checkPick = function() {
-  if (this.x < player.x + (player.width) &&
-  this.x + (this.width) > player.x &&
-  this.y === player.y) {
-    // collision detected --> pick reward
-    this.picked = true;
-  }
-};
-
-Collectible.prototype.collectPickedRewards = function() {
-  if (this.picked === true) {
-    this.collected = true;
-    if (this.sprite === "images/medal.png") {
-      medal.classList.remove("collectibles");
-      medal.classList.add("collectibles-open");
-    }
-    else if (this.sprite === "images/trophy.png") {
-      trophy.classList.remove("collectibles");
-      trophy.classList.add("collectibles-open");
-    }
-    else {
-      ballon.classList.remove("collectibles");
-      ballon.classList.add("collectibles-open");
-    }
-  }
-}
-
+// Same logic as used above to create enemies
 var collectibles = [];
 for (let i=1; i<4; i++) {
   let collectible = new Collectible();
