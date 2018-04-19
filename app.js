@@ -92,8 +92,8 @@ Enemy.prototype.checkCollision = function() {
     }, 200);
     player.dead = false;
     for (let reward of collectibles) {
-      if (reward.collected === true) {
-        reward.collected = false;
+      if (reward.picked === true) {
+        reward.picked = false;
       }
     }
   }
@@ -313,3 +313,23 @@ collectibles[0].sprite = 'images/medal.png';
 collectibles[1].sprite = 'images/trophy.png';
 collectibles[2].sprite = 'images/ballon.png';
 shufflePositionY(collectibles);
+
+// Give the user ability to select another player
+let messi = document.getElementById("Messi-bench");
+let ronaldo = document.getElementById("Ronaldo-bench");
+let neymar = document.getElementById("Neymar-bench");
+let characters = [messi, ronaldo, neymar];
+let charPic = ["images/Messi.png", "images/Ronaldo.png", "images/Neymar.png"];
+let bench = document.getElementById("bench");
+bench.addEventListener('click', function(evt) {
+  let clickedPlayer = evt.target;
+  for (let i=0; i<3; i++) {
+    if (characters[i] === clickedPlayer) {
+      player.sprite2 = charPic[i];
+      characters[i].classList.add("player-active");
+    }
+    else if (characters[i].classList.contains("player-active")) {
+      characters[i].classList.remove("player-active");
+    }
+  }
+});

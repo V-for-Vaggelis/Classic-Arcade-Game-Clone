@@ -191,7 +191,9 @@ var Engine = (function(global) {
     'images/Ramos.png',
     'images/medal.png',
     'images/trophy.png',
-    'images/ballon.png'
+    'images/ballon.png',
+    'images/Ronaldo.png',
+    'images/Neymar.png'
   ]);
   Resources.onReady(init);
 
