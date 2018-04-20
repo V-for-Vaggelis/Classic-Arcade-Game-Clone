@@ -62,7 +62,7 @@ h1 {
 #bench {
   margin-top: 10px;
   /* margin-left: 5%; */
-  width: 100%;
+  width: 300px;
   height: 200px;
   background: url("images/bench2.jpg");
   background-size: cover;

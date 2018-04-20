@@ -1,3 +1,4 @@
+
 /* I'll create an array holding all the possible y positions for the player and the enemies
 the position numbers were found after testing, the position step is related with the height of the icons used */
 let allY = [60];
@@ -134,7 +135,7 @@ Enemy.prototype.checkCollision = function() {
       }
     }
   }
-}
+};
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -144,9 +145,9 @@ var Player = function() {
   this.y = allY[4];
   this.height = 171;
   this.width = 101;
-  this.sprite = 'images/ball.png'
+  this.sprite = 'images/ball.png';
   this.dead = false;
-}
+};
 
 // This function creates the player
 Player.prototype.render = function() {
@@ -200,7 +201,7 @@ Player.prototype.restart = function() {
   for (let reward of collectibles) {
     reward.freeze = false;
   }
-}
+};
 
 // This function checks if the player wins the game by checking his y position
 Player.prototype.checkWin = function() {
@@ -217,7 +218,7 @@ Player.prototype.checkWin = function() {
       myPlayer.restart();
     }, 500);
   }
-}
+};
 
 // Constructor for collectible objects
 var Collectible = function() {
@@ -228,7 +229,7 @@ var Collectible = function() {
   this.width = 70;
   this.height = 70;
   this.freeze = false;
-}
+};
 
 Collectible.prototype.render = function() {
   // A collection happens if the player picked the prize and then scored, so if the prizes are picked or collected they are not rendered
@@ -293,7 +294,7 @@ Collectible.prototype.collectPickedRewards = function() {
       ballon.classList.add("collectibles-open");
     }
   }
-}
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
